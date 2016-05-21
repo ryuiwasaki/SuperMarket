@@ -14,16 +14,48 @@ class Tests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        XCTAssert(true, "Pass")
+    func testEverPostAppInfo() {
+        
+        let description = expectationWithDescription("Found information of everPost.")
+        SuperMarket.findAppWithName("everPost", developer: nil, country: nil, offset: 0, limit: 0, progress: { (progress) in
+            
+            
+        }) { (result) in
+            
+            switch result {
+            case .Success(items: let items) :
+                XCTAssertGreaterThan(items.count, 1)
+                description.fulfill()
+            case .Failure(error: let error) :
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        self.waitForExpectationsWithTimeout(100) { (error) in
+            
+        }
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock() {
-            // Put the code you want to measure the time of here.
+    func testEverPostAppInfoWithBundle() {
+        
+        let description = expectationWithDescription("Found information of everPost.")
+        SuperMarket.findAppWithTerms(nil, bundleId: "com.jagaimopotato.everpost", country: "jp", progress: { (progress) in
+            
+        }) { (result) in
+            
+            switch result {
+            case .Success(items: let items) :
+                XCTAssertEqual(items.count, 1, "")
+                description.fulfill()
+            case .Failure(error: let error) :
+                XCTFail(error.localizedDescription)
+            }
         }
+        
+        self.waitForExpectationsWithTimeout(100) { (error) in
+            
+        }
+        
     }
     
 }
