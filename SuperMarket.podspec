@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'SuperMarket'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of SuperMarket.'
+  s.summary          = 'Swift iTunes search API Wrapper.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -21,11 +21,11 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
-  s.homepage         = 'https://github.com/<GITHUB_USERNAME>/SuperMarket'
+  s.homepage         = 'https://github.com/ryuiwasaki/SuperMarket'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'ryuiwasaki' => 'ryu.contact.jp@gmail.com' }
-  s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/SuperMarket.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/ryuiwasaki/SuperMarket.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
