@@ -1,0 +1,6 @@
+use_frameworks!
+target 'SuperMarket_Tests' do
+  pod 'SuperMarket', :path => '../'
+  
+  
+end
