@@ -335,7 +335,7 @@ class Store {
 }
 
 public enum Result {
-    case Success(items:[ResultItem]), Failure(error:NSError)
+    case Success(items:[StoreItem]), Failure(error:NSError)
 }
 
 class FetchOperation : NSOperation {
@@ -399,9 +399,9 @@ class FetchOperation : NSOperation {
                 
                 if (json?["resultCount"] as? Int) > 0 {
                     
-                    let items = (json?["results"] as? [[NSObject:AnyObject]])?.reduce([ResultItem](), combine: { (items, child) -> [ResultItem] in
+                    let items = (json?["results"] as? [[NSObject:AnyObject]])?.reduce([StoreItem](), combine: { (items, child) -> [StoreItem] in
                         var items = items
-                        items.append(ResultItem(json: child))
+                        items.append(StoreItem(json: child))
                         return items
                     })
                     
@@ -517,7 +517,7 @@ class FetchOperation : NSOperation {
     }
 }
 
-public struct ResultItem {
+public struct StoreItem {
     
     let json : [NSObject:AnyObject]
     
