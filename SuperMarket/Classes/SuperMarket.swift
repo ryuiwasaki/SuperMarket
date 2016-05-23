@@ -8,9 +8,9 @@
 
 import Foundation
 
-public func findAppWithTerms(terms:[String]?, bundleId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+public func findAppWithTerms(terms:[String]?, bundleId:String?, appId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
     
-    Store.defaultStore().findAppWithTerms(terms, bundleId:bundleId, country: country, offset: offset, limit: limit, progress: progress, completion: completion)
+    Store.defaultStore().findAppWithTerms(terms, bundleId:bundleId, appId:appId, country: country, offset: offset, limit: limit, progress: progress, completion: completion)
 }
 
 public func findAppWithName(name:String?, developer:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {

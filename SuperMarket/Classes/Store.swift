@@ -320,12 +320,12 @@ class Store {
             terms.append(developer)
         }
         
-        findAppWithTerms(terms, bundleId:nil, country: country, progress: progress, completion: completion)
+        findAppWithTerms(terms, bundleId:nil, appId: nil, country: country, progress: progress, completion: completion)
     }
     
-    func findAppWithTerms(terms:[String]?, bundleId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findAppWithTerms(terms:[String]?, bundleId:String?, appId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
-        findWithTerms(terms, bundleId: bundleId, itemId: nil, country: country, offset: offset, limit: limit, entity: Entity.Software, mediaType: MediaType.Software, mediaAttribute: MediaAttribute.All, progress: progress, completion: completion)
+        findWithTerms(terms, bundleId: bundleId, itemId: appId, country: country, offset: offset, limit: limit, entity: Entity.Software, mediaType: MediaType.Software, mediaAttribute: MediaAttribute.All, progress: progress, completion: completion)
     }
     
     func findMusicWithTerms(terms:[String]?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {

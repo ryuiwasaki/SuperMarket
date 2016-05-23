@@ -39,7 +39,7 @@ class Tests: XCTestCase {
     func testEverPostAppInfoWithBundle() {
         
         let description = expectationWithDescription("Found information of everPost.")
-        SuperMarket.findAppWithTerms(nil, bundleId: "com.jagaimopotato.everpost", country: "jp", progress: { (progress) in
+        SuperMarket.findAppWithTerms(nil, bundleId: "com.jagaimopotato.everpost", appId:nil,  country: "jp", progress: { (progress) in
             
         }) { (result) in
             
