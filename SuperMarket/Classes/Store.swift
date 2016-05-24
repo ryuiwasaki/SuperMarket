@@ -303,7 +303,7 @@ class Store {
         let params = paramsWithTerms(terms, bundleId: bundleId, itemId: itemId, country: country, offset: offset, limit: limit, entity: entity, mediaType: mediaType, mediaAttribute: mediaAttribute)
         
         var endPoint = Endpoint.Search
-        if bundleId != nil {
+        if bundleId != nil || itemId != nil {
             endPoint = .Lookup
         }
         findEndpoint(endPoint, params: params, progress: progress, completion: completion)

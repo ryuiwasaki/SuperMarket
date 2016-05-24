@@ -58,4 +58,26 @@ class Tests: XCTestCase {
         
     }
     
+    func testEverPostAppInfoWithItemIt() {
+        
+        let description = expectationWithDescription("Found information of everPost.")
+        SuperMarket.findAppWithTerms(nil, bundleId: nil, appId:"595116637",  country: "jp", progress: { (progress) in
+            
+        }) { (result) in
+            
+            switch result {
+            case .Success(items: let items) :
+                XCTAssertEqual(items.count, 1, "")
+                description.fulfill()
+            case .Failure(error: let error) :
+                XCTFail(error.localizedDescription)
+            }
+        }
+        
+        self.waitForExpectationsWithTimeout(100) { (error) in
+            
+        }
+        
+    }
+    
 }
