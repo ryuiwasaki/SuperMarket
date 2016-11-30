@@ -7,17 +7,41 @@
 //
 
 import Foundation
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 enum Endpoint {
     
-    case Lookup, Search
+    case lookup, search
     
     var URLString : String {
         
         switch self {
-        case .Lookup :
+        case .lookup :
             return "https://itunes.apple.com/lookup"
-        case .Search :
+        case .search :
             return "https://itunes.apple.com/search"
         }
     }
@@ -243,8 +267,8 @@ enum MediaAttribute : String {
 
 class Store {
     
-    var fetchQueue : NSOperationQueue = {
-        let op = NSOperationQueue()
+    var fetchQueue : OperationQueue = {
+        let op = OperationQueue()
         op.maxConcurrentOperationCount = 1
         return op
     }()
@@ -254,12 +278,12 @@ class Store {
         return sharedInstance
     }
     
-    func paramsWithTerms(terms:[String]?, bundleId:String?, itemId:String?, country:String?, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute) -> [String:String] {
+    func paramsWithTerms(_ terms:[String]?, bundleId:String?, itemId:String?, country:String?, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute) -> [String:String] {
         
         var params = [String:String]()
         
         if let terms = terms {
-            params["term"] = terms.joinWithSeparator("+")
+            params["term"] = terms.joined(separator: "+")
         }
         
         if let bundleId = bundleId {
@@ -286,30 +310,31 @@ class Store {
         
     }
     
-    func findEndpoint(endpoint:Endpoint, params:[String:String]?, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findEndpoint(_ endpoint:Endpoint, params:[String:String]?, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
         let op = FetchOperation(endPoint: endpoint, params: params)
         op.resultBlock = completion
+        
         fetchQueue.addOperation(op)
     }
     
-    func findWithItemId(itemId:String, country:String, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findWithItemId(_ itemId:String, country:String, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
         findWithTerms(nil, bundleId: nil, itemId: itemId, country: country, offset: offset, limit: limit, entity: entity, mediaType: mediaType, mediaAttribute: mediaAttribute, progress: progress, completion: completion)
     }
     
-    func findWithTerms(terms:[String]?, bundleId:String?, itemId:String?, country:String?, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findWithTerms(_ terms:[String]?, bundleId:String?, itemId:String?, country:String?, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
         let params = paramsWithTerms(terms, bundleId: bundleId, itemId: itemId, country: country, offset: offset, limit: limit, entity: entity, mediaType: mediaType, mediaAttribute: mediaAttribute)
         
-        var endPoint = Endpoint.Search
+        var endPoint = Endpoint.search
         if bundleId != nil || itemId != nil {
-            endPoint = .Lookup
+            endPoint = .lookup
         }
         findEndpoint(endPoint, params: params, progress: progress, completion: completion)
     }
     
-    func findAppWithName(name:String?, developer:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findAppWithName(_ name:String?, developer:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
         var terms = [String]()
         if let name = name {
@@ -323,22 +348,22 @@ class Store {
         findAppWithTerms(terms, bundleId:nil, appId: nil, country: country, progress: progress, completion: completion)
     }
     
-    func findAppWithTerms(terms:[String]?, bundleId:String?, appId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findAppWithTerms(_ terms:[String]?, bundleId:String?, appId:String?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
         
         findWithTerms(terms, bundleId: bundleId, itemId: appId, country: country, offset: offset, limit: limit, entity: Entity.Software, mediaType: MediaType.Software, mediaAttribute: MediaAttribute.All, progress: progress, completion: completion)
     }
     
-    func findMusicWithTerms(terms:[String]?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
+    func findMusicWithTerms(_ terms:[String]?, country:String?, offset:Int = 0, limit:Int = 0, progress:((Double) -> Void)?, completion:((Result) -> Void)?) {
 
         findWithTerms(terms, bundleId: nil, itemId: nil, country: country, offset: offset, limit: limit, entity: Entity.MusicTrack, mediaType: MediaType.Music, mediaAttribute: MediaAttribute.All, progress: progress, completion: completion)
     }
 }
 
 public enum Result {
-    case Success(items:[StoreItem]), Failure(error:NSError)
+    case success(items:[StoreItem]), failure(error:NSError)
 }
 
-class FetchOperation : NSOperation {
+class FetchOperation : Operation {
     
     var endPoint : Endpoint
     var params : [String:String]?
@@ -356,16 +381,16 @@ class FetchOperation : NSOperation {
         super.init()
     }
     
-    func URLForEndpint(endpoint:Endpoint, params:[String:String]?) -> NSURL? {
+    func URLForEndpint(_ endpoint:Endpoint, params:[String:String]?) -> URL? {
         
         let query = params?
-        .reduce([String](), combine: { (list, param:(String, String)) -> [String] in
+        .reduce([String](), { (list, param:(String, String)) -> [String] in
             var list = list
             list.append(param.0 + "=" + param.1)
             
             return list
         })
-        .reduce("", combine: { (request, paramStr) -> String in
+        .reduce("", { (request, paramStr) -> String in
             return request + "&" + paramStr
         })
         
@@ -374,111 +399,111 @@ class FetchOperation : NSOperation {
             urlString += "?" + query
         }
         
-        return NSURL(string: urlString)
+        return URL(string: urlString)
     }
     
-    func downloadDataFromAPI(endpoint:Endpoint, params:[String:String]?) {
+    func downloadDataFromAPI(_ endpoint:Endpoint, params:[String:String]?) {
         
         guard let URL = URLForEndpint(endpoint, params: params) else { return }
-        let request = NSURLRequest(URL: URL)
-        let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-        let donwloadTask = session.downloadTaskWithRequest(request) { (location, response, error) in
+        let request = URLRequest(url: URL)
+        let session = URLSession(configuration: URLSessionConfiguration.default)
+        let donwloadTask = session.downloadTask(with: request, completionHandler: { (location, response, error) in
             
             if let error = error {
-                self.resultBlock?(Result.Failure(error: error))
+                self.resultBlock?(Result.failure(error: error as NSError))
                 self.finish()
                 return
             }
             
-            guard let location = location, let data = NSData(contentsOfURL: location) else {
+            guard let location = location, let data = try? Data(contentsOf: location) else {
                 self.finish()
                 return
             }
             
-            if let json = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments) as? [String:AnyObject] {
+            if let json = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? [String:AnyObject] {
                 
                 if (json?["resultCount"] as? Int) > 0 {
                     
-                    let items = (json?["results"] as? [[NSObject:AnyObject]])?.reduce([StoreItem](), combine: { (items, child) -> [StoreItem] in
+                    let items = (json?["results"] as? [[AnyHashable: Any]])?.reduce([StoreItem](), { (items, child) -> [StoreItem] in
                         var items = items
                         items.append(StoreItem(json: child))
                         return items
                     })
                     
-                    let result = Result.Success(items: items ?? [])
+                    let result = Result.success(items: items ?? [])
                     self.resultBlock?(result)
                     self.finish()
                 } else {
                    
-                    self.resultBlock?(Result.Success(items:[]))
+                    self.resultBlock?(Result.success(items:[]))
                     self.finish()
                 }
             } else {
-                self.resultBlock?(Result.Success(items:[]))
+                self.resultBlock?(Result.success(items:[]))
                 self.finish()
             }
-        }
+        }) 
         
         donwloadTask.resume()
     }
     
-    override var ready:Bool {
+    override var isReady:Bool {
         get { return _ready }
         set {
-            willChangeValueForKey("isReady")
+            willChangeValue(forKey: "isReady")
             _ready = newValue
-            didChangeValueForKey("isReady")
+            didChangeValue(forKey: "isReady")
         }
     }
     
-    override var executing:Bool {
+    override var isExecuting:Bool {
         get { return _executing }
         set {
-            willChangeValueForKey("isExecuting")
+            willChangeValue(forKey: "isExecuting")
             _executing = newValue
-            didChangeValueForKey("isExecuting")
+            didChangeValue(forKey: "isExecuting")
         }
     }
     
-    override var finished:Bool {
+    override var isFinished:Bool {
         get { return _finished }
         set {
-            willChangeValueForKey("isFinished")
+            willChangeValue(forKey: "isFinished")
             _finished = newValue
-            didChangeValueForKey("isFinished")
+            didChangeValue(forKey: "isFinished")
         }
     }
     
-    override var cancelled:Bool {
+    override var isCancelled:Bool {
         get { return _cancelled }
         set {
-            willChangeValueForKey("isCancelled")
+            willChangeValue(forKey: "isCancelled")
             _cancelled = newValue
-            didChangeValueForKey("isCancelled")
+            didChangeValue(forKey: "isCancelled")
         }
     }
     
-    override var concurrent : Bool {
+    override var isConcurrent : Bool {
         return true
     }
     
-    override var asynchronous : Bool {
+    override var isAsynchronous : Bool {
         return true
     }
     
     override func start() {
         
-        ready = true
-        executing = false
-        finished = false
-        cancelled = false
+        isReady = true
+        isExecuting = false
+        isFinished = false
+        isCancelled = false
         
         main()
     }
     
     override func main() {
         
-        if self.cancelled {
+        if self.isCancelled {
             finish()
             return
         }
@@ -488,20 +513,20 @@ class FetchOperation : NSOperation {
     
     override func cancel() {
         
-        ready = false
-        executing = false
-        cancelled = true
-        finished = false
+        isReady = false
+        isExecuting = false
+        isCancelled = true
+        isFinished = false
     }
     
     // MARK: - Execute main block
-    private func execute() {
+    fileprivate func execute() {
         
-        ready = false
-        executing = true
-        finished = false
+        isReady = false
+        isExecuting = true
+        isFinished = false
         
-        if self.cancelled {
+        if self.isCancelled {
             finish()
             return
         }
@@ -510,16 +535,16 @@ class FetchOperation : NSOperation {
         
     }
     
-    private func finish() {
-        ready = false
-        executing = false
-        finished = true
+    fileprivate func finish() {
+        isReady = false
+        isExecuting = false
+        isFinished = true
     }
 }
 
 public struct StoreItem {
     
-    let json : [NSObject:AnyObject]
+    let json : [AnyHashable: Any]
     
     public var artistId : String? {
         
@@ -708,17 +733,17 @@ public struct StoreItem {
     
     public var collectionPrice : Int? {
         
-        return (json["collectionPrice"] as? NSNumber)?.integerValue
+        return (json["collectionPrice"] as? NSNumber)?.intValue
     }
     
     public var discCount : Int? {
         
-        return (json["discCount"] as? NSNumber)?.integerValue
+        return (json["discCount"] as? NSNumber)?.intValue
     }
     
     public var discNumber : Int? {
         
-        return (json["discNumber"] as? NSNumber)?.integerValue
+        return (json["discNumber"] as? NSNumber)?.intValue
     }
     
     public var fileSizeBytes : Double? {
@@ -738,12 +763,12 @@ public struct StoreItem {
     
     public var trackCount : Int? {
         
-        return (json["trackCount"] as? NSNumber)?.integerValue
+        return (json["trackCount"] as? NSNumber)?.intValue
     }
     
     public var trackNumber : Int? {
         
-        return (json["trackNumber"] as? NSNumber)?.integerValue
+        return (json["trackNumber"] as? NSNumber)?.intValue
     }
     
     public var trackTimeMillis : [String]? {
@@ -781,11 +806,11 @@ public struct StoreItem {
         return json["isIsGameCenterEnabled"] as? Bool
     }
     
-    public var releaseDate : NSDate? {
-        let formatter = NSDateFormatter()
+    public var releaseDate : Date? {
+        let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
         guard let str = json["releaseDate"] as? String else { return nil }
-        return formatter.dateFromString(str)
+        return formatter.date(from: str)
     }
     
 }

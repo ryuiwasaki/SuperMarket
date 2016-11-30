@@ -16,43 +16,43 @@ class Tests: XCTestCase {
     
     func testEverPostAppInfo() {
         
-        let description = expectationWithDescription("Found information of everPost.")
+        let description = expectation(description: "Found information of everPost.")
         SuperMarket.findAppWithName("everPost", developer: nil, country: nil, offset: 0, limit: 0, progress: { (progress) in
             
             
         }) { (result) in
             
             switch result {
-            case .Success(items: let items) :
-                XCTAssertGreaterThan(items.count, 1)
+            case .success(items: let items) :
+                XCTAssertEqual(items.count, 1)
                 description.fulfill()
-            case .Failure(error: let error) :
+            case .failure(error: let error) :
                 XCTFail(error.localizedDescription)
             }
         }
         
-        self.waitForExpectationsWithTimeout(100) { (error) in
+        self.waitForExpectations(timeout: 100) { (error) in
             
         }
     }
     
     func testEverPostAppInfoWithBundle() {
         
-        let description = expectationWithDescription("Found information of everPost.")
+        let description = expectation(description: "Found information of everPost.")
         SuperMarket.findAppWithTerms(nil, bundleId: "com.jagaimopotato.everpost", appId:nil,  country: "jp", progress: { (progress) in
             
         }) { (result) in
             
             switch result {
-            case .Success(items: let items) :
+            case .success(items: let items) :
                 XCTAssertEqual(items.count, 1, "")
                 description.fulfill()
-            case .Failure(error: let error) :
+            case .failure(error: let error) :
                 XCTFail(error.localizedDescription)
             }
         }
         
-        self.waitForExpectationsWithTimeout(100) { (error) in
+        self.waitForExpectations(timeout: 100) { (error) in
             
         }
         
@@ -60,21 +60,21 @@ class Tests: XCTestCase {
     
     func testEverPostAppInfoWithItemIt() {
         
-        let description = expectationWithDescription("Found information of everPost.")
+        let description = expectation(description: "Found information of everPost.")
         SuperMarket.findAppWithTerms(nil, bundleId: nil, appId:"595116637",  country: "jp", progress: { (progress) in
             
         }) { (result) in
             
             switch result {
-            case .Success(items: let items) :
+            case .success(items: let items) :
                 XCTAssertEqual(items.count, 1, "")
                 description.fulfill()
-            case .Failure(error: let error) :
+            case .failure(error: let error) :
                 XCTFail(error.localizedDescription)
             }
         }
         
-        self.waitForExpectationsWithTimeout(100) { (error) in
+        self.waitForExpectations(timeout: 100) { (error) in
             
         }
         
