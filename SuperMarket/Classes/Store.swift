@@ -278,6 +278,10 @@ class Store {
         return sharedInstance
     }
     
+    /**
+     Build parameters for query.
+     - parameter country: ISO 3166-1 alpha-2 codes
+    */
     func paramsWithTerms(_ terms:[String]?, bundleId:String?, itemId:String?, country:String?, offset:Int = 0, limit:Int = 0, entity:Entity, mediaType:MediaType, mediaAttribute:MediaAttribute) -> [String:String] {
         
         var params = [String:String]()
