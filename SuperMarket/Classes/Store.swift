@@ -307,8 +307,8 @@ class Store {
         params["entity"] = entity.value
         params["media"] = mediaType.value
         params["attribute"] = mediaAttribute.value
-        params["offset"] = String(offset) ?? "0"
-        params["limit"] = String(limit) ?? "0"
+        params["offset"] = String(offset) 
+        params["limit"] = String(limit) 
         
         return params
         
