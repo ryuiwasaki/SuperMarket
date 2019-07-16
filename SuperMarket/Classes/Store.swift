@@ -426,9 +426,9 @@ class FetchOperation : Operation {
             
             if let json = try? JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments) as? [String:AnyObject] {
                 
-                if (json?["resultCount"] as? Int) > 0 {
+                if (json["resultCount"] as? Int) > 0 {
                     
-                    let items = (json?["results"] as? [[AnyHashable: Any]])?.reduce([StoreItem](), { (items, child) -> [StoreItem] in
+                    let items = (json["results"] as? [[AnyHashable: Any]])?.reduce([StoreItem](), { (items, child) -> [StoreItem] in
                         var items = items
                         items.append(StoreItem(json: child))
                         return items
